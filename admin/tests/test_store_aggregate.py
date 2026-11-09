@@ -158,3 +158,9 @@ def test_per_person_branch_counts_only_groups_present():
     ])
     v = p["values"]["orders_extra_seats"]["2026.45"]
     assert v["g:СР1"] == 4 and v["dir"] == 4  # СР9 staff does not dilute the direction
+
+
+def test_data_date_is_last_day_with_daily_data_not_file_date():
+    p = _payload([Fact("quality_invoices", "2026-11-06", "СР1", "А", 3, 1)],
+                 [SourceInfo("funnel", date(2026, 11, 6), "x"), SourceInfo("ak", date(2026, 11, 9), "x")])
+    assert p["dataDate"] == "2026-11-06"

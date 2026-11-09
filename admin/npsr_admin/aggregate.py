@@ -166,7 +166,8 @@ def build_payload(facts: list[Fact], sources: list[SourceInfo], norms: dict, tod
     return {
         "schemaVersion": 1,
         "generatedAt": datetime.now().isoformat(timespec="seconds"),
-        "dataDate": max(dated).isoformat() if dated else None,
+        # the last day with daily data; weekly reports are dated by their file and would overstate it
+        "dataDate": max((f.period for f in daily), default=None) or (max(dated).isoformat() if dated else None),
         "weeks": weeks,
         "days": days,
         "sources": src,
