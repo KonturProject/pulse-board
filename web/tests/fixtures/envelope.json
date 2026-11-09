@@ -1,0 +1,1 @@
+{"phrase": "arbuz-volk-luna-sad-42", "env": {"v": 1, "alg": "AES-GCM", "kdf": "PBKDF2-SHA256", "iter": 250000, "salt": "EXdPA7xfu3PJ1fFAc5k6fg==", "iv": "a6lqWH6tkK8q5y9C", "ciphertext": "pa4r/zRrYsFx0lVfJloM7FvsW91m561u9NkSQO9MzmnkSQkmCSYefDGrQ2VyTA=="}, "plain": {"hello": "мир", "n": [1, 2.5]}}

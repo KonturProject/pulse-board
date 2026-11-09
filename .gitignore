@@ -1,0 +1,14 @@
+*.xls
+*.xlsx
+*.xlsb
+*.xlsm
+.superpowers/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+web/dist/
+.venv/
+*.egg-info/
+web/public/data/
+web/tests/fixtures/generated/

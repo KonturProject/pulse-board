@@ -1,0 +1,22 @@
+[project]
+name = "npsr-admin"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["pyxlsb>=1.0.10", "openpyxl>=3.1", "cryptography>=42"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["npsr_admin*"]
+
+[tool.setuptools.package-data]
+npsr_admin = ["ui/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".."]

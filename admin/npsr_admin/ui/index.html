@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админка — Пульс направления</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">П</span><div><h1>Пульс направления</h1><p id="status">Загружаю настройки…</p></div></div>
+    <div class="actions">
+      <button id="collect" class="btn ink">Собрать отчёты</button>
+      <button id="publish" class="btn green" disabled>Опубликовать</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Отчёты</h2>
+      <p class="hint">Укажите папку для каждого отчёта один раз — дальше админка сама берёт самый свежий файл.
+        Нет доступа к сети — перетащите файл на строку отчёта.</p>
+      <div class="table-wrap"><table id="reports">
+        <thead><tr><th>Отчёт</th><th>Папка</th><th>Шаблон имени</th><th>Последний сбор</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </section>
+
+    <section class="card" id="progress-card" hidden>
+      <h2>Ход сбора</h2>
+      <ol id="log"></ol>
+    </section>
+
+    <section class="card" id="summary-card" hidden>
+      <h2>Что подтянулось</h2>
+      <p class="hint" id="summary-note"></p>
+      <div class="table-wrap"><table id="summary"><thead></thead><tbody></tbody></table></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>Нормативы</h2>
+        <p class="hint">«Минимум» — ниже него показатель красный, «цель» — ниже неё зона риска.
+          Пусто — сравниваем со средним по группам.</p>
+        <table id="norms"><thead><tr><th>Показатель</th><th>Минимум</th><th>Цель</th></tr></thead><tbody></tbody></table>
+        <label class="inline">«Гадкий утёнок» — хуже среднего по группам больше чем на
+          <input id="duck" type="number" min="1" max="90" step="1"> %</label>
+        <button id="save-norms" class="btn ghost">Сохранить нормативы</button>
+      </section>
+
+      <section class="card">
+        <h2>Ссылка для руководителей</h2>
+        <label class="stack">Адрес сайта на GitHub Pages
+          <input id="site" placeholder="https://konturproject.github.io/…/"></label>
+        <div class="link-box" id="link">Ссылка появится после первой публикации</div>
+        <div class="row">
+          <button id="copy" class="btn ghost">Скопировать ссылку</button>
+          <button id="phrase" class="btn ghost danger">Сменить код доступа</button>
+        </div>
+        <p class="hint">После смены кода старая ссылка перестанет открывать данные со следующей публикации.</p>
+      </section>
+    </div>
+  </main>
+  <div id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
