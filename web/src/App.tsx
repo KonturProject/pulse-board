@@ -5,6 +5,7 @@ import { loadDashboard, readPhrase, savePhrase, type Payload } from './data'
 import { groupFromHash } from './route'
 import { Group } from './screens/Group'
 import { Main } from './screens/Main'
+import { Rating } from './screens/Rating'
 import type { Sel } from './view'
 
 function defaultSel(p: Payload): Sel {
@@ -59,6 +60,7 @@ export default function App() {
     if (busy && !error) return <main className="access"><p className="muted">Загружаю данные…</p></main>
     return <AccessScreen error={error} busy={busy} onSubmit={open} />
   }
+  if (location.hash.startsWith('#/rating')) return <Rating payload={payload} sel={sel} onSel={setSel} />
   const group = groupFromHash(location.hash)
   if (!group && location.hash.startsWith('#/g/')) history.replaceState(null, '', '#/') // unknown group → main
   return group

@@ -143,6 +143,16 @@ def build_payload(facts: list[Fact], sources: list[SourceInfo], norms: dict, tod
             else:
                 mv[w] = _values(_levels(fs))
 
+    # employee (num, den) per day / week — lets the dashboard recompute a group without chosen people
+    parts: dict[str, dict[str, dict[str, list[float]]]] = defaultdict(lambda: defaultdict(dict))
+    for f in daily + weekly:
+        if f.employee is None or f.metric in HIDDEN or f.metric in NEEDS_STAFF:
+            continue
+        cell = parts[f.metric][f.period].setdefault(f"e:{f.group}:{f.employee}", [0.0, 0.0])
+        cell[0] = round(cell[0] + f.num, 4)
+        cell[1] = round(cell[1] + f.den, 4)
+    staff_days = {d: sorted({f"e:{f.group}:{f.employee}" for f in fs}) for d, fs in by_metric_day["staff"].items()}
+
     entities: dict[str, dict] = {"dir": {"label": "Направление"}}
     for b in BRANCHES:
         entities[f"br:{b}"] = {"label": b}
@@ -175,4 +185,6 @@ def build_payload(facts: list[Fact], sources: list[SourceInfo], norms: dict, tod
         "duckThreshold": duck_threshold,
         "entities": entities,
         "values": values,
+        "parts": {m: dict(per) for m, per in parts.items()},
+        "staff": staff_days,
     }

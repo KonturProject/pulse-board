@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import type { Payload } from '../data'
+import type { Zone } from '../eval'
 import { fmt } from '../format'
-import { METRIC, METRICS } from '../metrics'
+import { MAIN_METRICS, METRIC } from '../metrics'
 import { cellValue, cellZone, GROUP_KEYS, type Sel } from '../view'
 import { Ring } from './Ring'
 
@@ -13,16 +15,24 @@ function plural(n: number, one: string, few: string, many: string) {
   return many
 }
 
+const ZONE_TITLE = { good: 'Сильные показатели', risk: 'Показатели в зоне риска', bad: 'Провалы' }
+
 type Props = { payload: Payload; sel: Sel; group: string; large?: boolean }
 
 export function GroupCard({ payload, sel, group, large }: Props) {
   const key = `g:${group}`
   const label = payload.entities[key]?.label ?? group
-  const counts = { good: 0, risk: 0, bad: 0 }
-  for (const m of METRICS) {
+  const [open, setOpen] = useState<Exclude<Zone, 'none'> | null>(null)
+  const byZone: Record<Exclude<Zone, 'none'>, string[]> = { good: [], risk: [], bad: [] }
+  for (const m of MAIN_METRICS) {
     const z = cellZone(payload, m.id, key, sel, GROUP_KEYS).zone
-    if (z !== 'none') counts[z] += 1
+    if (z !== 'none') byZone[z].push(m.id)
   }
+  const tag = (z: Exclude<Zone, 'none'>, text: string) =>
+    byZone[z].length > 0 && (
+      <button type="button" className={`tag z-${z}${open === z ? ' open' : ''}`} aria-expanded={open === z}
+        onClick={() => setOpen(open === z ? null : z)}>{text}</button>
+    )
   const rr = cellValue(payload, 'runrate_money', key, sel).value
   const bars = BAR_METRICS.filter((id) => payload.values[id]).map((id) => {
     const { value } = cellValue(payload, id, key, sel)
@@ -31,16 +41,30 @@ export function GroupCard({ payload, sel, group, large }: Props) {
     const max = Math.max(...peers, target ?? 0, value ?? 0) * 1.12 || 1
     return { id, value, target, max, zone: cellZone(payload, id, key, sel, GROUP_KEYS).zone }
   })
-  const Tag = large ? 'section' : 'a'
+  const n = (z: Exclude<Zone, 'none'>) => byZone[z].length
   return (
-    <Tag className={`gcard${large ? ' gcard-lg' : ''}`} {...(large ? {} : { href: `#/g/${group}` })}>
+    <section className={`gcard${large ? ' gcard-lg' : ''}`}>
       <header>
-        <h3>{label}{!large && <span aria-hidden="true"> ›</span>}</h3>
+        <h3>{large ? label : <a href={`#/g/${group}`}>{label}<span aria-hidden="true"> ›</span></a>}</h3>
         <p className="tags">
-          {counts.good > 0 && <span className="tag z-good">{counts.good} {plural(counts.good, 'сильный', 'сильных', 'сильных')}</span>}
-          {counts.risk > 0 && <span className="tag z-risk">{counts.risk} в риске</span>}
-          {counts.bad > 0 && <span className="tag z-bad">{counts.bad} {plural(counts.bad, 'провал', 'провала', 'провалов')}</span>}
+          {tag('good', `${n('good')} ${plural(n('good'), 'сильный', 'сильных', 'сильных')}`)}
+          {tag('risk', `${n('risk')} в риске`)}
+          {tag('bad', `${n('bad')} ${plural(n('bad'), 'провал', 'провала', 'провалов')}`)}
         </p>
+        {open && (
+          <ul className={`zone-list z-${open}`} aria-label={ZONE_TITLE[open]}>
+            {byZone[open].map((id) => {
+              const target = payload.norms[id]?.target
+              return (
+                <li key={id}>
+                  <span>{METRIC[id].label}</span>
+                  <b>{fmt(id, cellValue(payload, id, key, sel).value)}</b>
+                  <small>{target != null ? `цель ${fmt(id, target)}` : 'от среднего'}</small>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </header>
       <div className="gcard-body">
         <Ring value={rr} size="sm" label="ран-рейт" tiers={payload.norms.runrate_money?.tiers} />
@@ -57,6 +81,6 @@ export function GroupCard({ payload, sel, group, large }: Props) {
           ))}
         </ul>
       </div>
-    </Tag>
+    </section>
   )
 }

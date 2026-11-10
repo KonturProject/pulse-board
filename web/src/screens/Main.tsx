@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import type { Payload } from '../data'
 import { fmt } from '../format'
-import { METRIC } from '../metrics'
+import { LEAD_METRICS, METRIC } from '../metrics'
 import { GroupCard } from '../ui/GroupCard'
 import { Header } from '../ui/Header'
 import { Heatmap, Legend, type Row } from '../ui/Heatmap'
@@ -17,6 +18,7 @@ export function Main({ payload, sel, onSel }: Props) {
     { key: 'dir', label: 'Направление', kind: 'dir' },
   ]
   const tiers = payload.norms.runrate_money?.tiers
+  const [lead, setLead] = useState(false)
   return (
     <>
       <Header payload={payload} sel={sel} onSel={onSel} title="Пульс направления" />
@@ -39,6 +41,23 @@ export function Main({ payload, sel, onSel }: Props) {
             )
           })}
         </section>
+
+        <nav className="views" aria-label="Разделы">
+          <a className="view-btn" href="#/rating">Рейтинг руководителей</a>
+          <button type="button" className={`view-btn${lead ? ' on' : ''}`} aria-expanded={lead} onClick={() => setLead(!lead)}>
+            Данные для ДПП, координатора и РФ
+          </button>
+        </nav>
+
+        {lead && (
+          <section className="panel lead-panel">
+            <div className="panel-head">
+              <h2>Данные для ДПП, координатора и РФ</h2>
+              <p className="muted">Показатели для руководства направлением — группам смотреть не обязательно.</p>
+            </div>
+            <Heatmap payload={payload} sel={sel} rows={rows} peerKeys={GROUP_KEYS} metrics={LEAD_METRICS} caption="Данные для руководства" />
+          </section>
+        )}
 
         <section className="panel">
           <div className="panel-head">

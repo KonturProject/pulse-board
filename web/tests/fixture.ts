@@ -18,6 +18,8 @@ export function fixture(): Payload {
   const values: Payload['values'] = {
     quality_invoices: {}, runrate_money: {}, runrate_pcs: {}, attempts_300: { '2026.45': a300, '2026.44': a300 },
     oz_speed_30: {},
+    ak_rg_feedback: { '2026.45': groupValues([62, 74, 70, 75, 55, 53], { dir: 66 }) },
+    ak_robot_coverage: { '2026.45': groupValues([1, 1, 1, 1, 1, 1], { dir: 1 }) },
     ns1_attempts: { '2026.45': groupValues([3.8, 4.6, 4.4, 5.4, 3.9, 3.0], { dir: 4.4, 'e:СР2:Иванова Анна': 3.2, 'e:СР2:Петров Иван': 5.6 }) },
   }
   for (const d of DAYS) {
@@ -47,5 +49,9 @@ export function fixture(): Payload {
     duckThreshold: 0.15,
     entities,
     values,
+    parts: {
+      quality_invoices: { '2026-11-06': { 'e:СР2:Иванова Анна': [2, 1], 'e:СР2:Петров Иван': [9, 2] } },
+    },
+    staff: { '2026-11-06': ['e:СР2:Петров Иван'] },
   }
 }

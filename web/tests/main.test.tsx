@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Main } from '../src/screens/Main'
 import { fixture } from './fixture'
@@ -39,5 +39,21 @@ describe('Main screen', () => {
   it('marks metrics from a stale report', () => {
     render(<Main payload={fixture()} sel={sel} onSel={() => {}} />)
     expect(screen.getByTestId('head-quality_invoices').textContent).toContain('⚠')
+  })
+
+  it('keeps leadership-only and dropped metrics off the main heatmap', () => {
+    render(<Main payload={fixture()} sel={sel} onSel={() => {}} />)
+    const table = screen.getByRole('table', { name: 'Группы по показателям' })
+    expect(within(table).queryByTestId('head-ak_rg_feedback')).toBeNull()
+    expect(screen.queryByTestId('head-ak_robot_coverage')).toBeNull()
+  })
+
+  it('shows leadership data behind its button', () => {
+    render(<Main payload={fixture()} sel={sel} onSel={() => {}} />)
+    expect(screen.queryByRole('table', { name: 'Данные для руководства' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Данные для ДПП, координатора и РФ' }))
+    const t = screen.getByRole('table', { name: 'Данные для руководства' })
+    expect(within(t).getByTestId('head-ak_rg_feedback')).toBeTruthy()
+    expect(within(t).queryByTestId('head-ak_robot_coverage')).toBeNull()
   })
 })

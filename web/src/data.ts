@@ -15,6 +15,10 @@ export type Payload = {
   entities: Record<string, Entity>
   /** metric -> period (`YYYY-MM-DD`, `YYYY.WW`, `YYYY.WW~YYYY-MM-DD`) -> entity key -> value */
   values: Record<string, Record<string, Record<string, number>>>
+  /** metric -> period -> employee key -> [num, den]: lets a group be recomputed without some people */
+  parts?: Record<string, Record<string, Record<string, [number, number]>>>
+  /** day -> employee keys with a plan in the daily funnel that day */
+  staff?: Record<string, string[]>
 }
 
 const STORAGE_KEY = 'npsr-phrase'

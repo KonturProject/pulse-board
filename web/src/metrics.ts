@@ -8,6 +8,8 @@ export type MetricDef = {
   granularity: 'day' | 'week'
   /** No per-employee values exist for this metric (pivot or group-only data). */
   groupOnly?: boolean
+  /** Shown only behind «Данные для ДПП, координатора и РФ». */
+  leadership?: boolean
 }
 
 /** Column order of the heatmaps. */
@@ -20,14 +22,17 @@ export const METRICS: MetricDef[] = [
   { id: 'attempts_300', label: 'Попытки в 300+', short: 'Попытки 300+', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'oz_attempts', label: 'Попытки в ОЗ', short: 'Попытки ОЗ', unit: 'num', granularity: 'day' },
   { id: 'oz_speed_30', label: 'ОЗ взяты за 30 минут', short: 'ОЗ ≤ 30 мин', unit: 'pct', granularity: 'day' },
-  { id: 'ak_rg_feedback', label: 'АК: обратная связь руководителя', short: 'АК: ОС РГ', unit: 'score', granularity: 'week', groupOnly: true },
-  { id: 'ak_robot_coverage', label: 'АК: охват оценкой робота', short: 'АК: охват', unit: 'pct', granularity: 'week', groupOnly: true },
+  { id: 'ak_rg_feedback', label: 'АК: обратная связь руководителя', short: 'АК: ОС РГ', unit: 'score', granularity: 'week', groupOnly: true, leadership: true },
   { id: 'ak_pay_term_primary', label: 'АК: срок оплаты, первичка', short: 'Срок опл. перв.', unit: 'pct', granularity: 'week' },
   { id: 'ak_pay_term_ns', label: 'АК: срок оплаты, НС', short: 'Срок опл. НС', unit: 'pct', granularity: 'week' },
   { id: 'orders_extra_seats', label: 'Счета на доп. места на человека', short: 'Доп. места', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'orders_schools', label: 'Счета на школы на человека', short: 'Школы', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'orders_periodicals', label: 'Счета на периодику на человека', short: 'Периодика', unit: 'num', granularity: 'week', groupOnly: true },
 ]
+
+/** What group leaders see on the main screens. */
+export const MAIN_METRICS = METRICS.filter((m) => !m.leadership)
+export const LEAD_METRICS = METRICS.filter((m) => m.leadership)
 
 export const METRIC = Object.fromEntries(METRICS.map((m) => [m.id, m])) as Record<string, MetricDef>
 

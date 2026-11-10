@@ -164,3 +164,17 @@ def test_data_date_is_last_day_with_daily_data_not_file_date():
     p = _payload([Fact("quality_invoices", "2026-11-06", "СР1", "А", 3, 1)],
                  [SourceInfo("funnel", date(2026, 11, 6), "x"), SourceInfo("ak", date(2026, 11, 9), "x")])
     assert p["dataDate"] == "2026-11-06"
+
+
+def test_payload_carries_employee_parts_and_daily_staff():
+    p = _payload([
+        Fact("staff", "2026-11-06", "СР1", "А", 1, 1),
+        Fact("quality_invoices", "2026-11-06", "СР1", "А", 3, 1),
+        Fact("quality_invoices", "2026-11-06", "СР1", "Б", 5, 1),
+        Fact("ns1_attempts", "2026.45", "СР1", "А", 9, 2),
+        Fact("runrate_money", "2026-11-06", "СР1", None, 120, 100),  # group-level only: no parts
+    ])
+    assert p["parts"]["quality_invoices"]["2026-11-06"] == {"e:СР1:А": [3, 1], "e:СР1:Б": [5, 1]}
+    assert p["parts"]["ns1_attempts"]["2026.45"] == {"e:СР1:А": [9, 2]}
+    assert "runrate_money" not in p["parts"]
+    assert p["staff"] == {"2026-11-06": ["e:СР1:А"]}

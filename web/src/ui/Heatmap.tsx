@@ -1,6 +1,6 @@
 import type { Payload } from '../data'
 import { fmt } from '../format'
-import { METRICS, type MetricDef } from '../metrics'
+import { MAIN_METRICS, type MetricDef } from '../metrics'
 import { cellValue, cellZone, isStale, type Sel } from '../view'
 
 export type Row = { key: string; label: string; href?: string; kind: 'group' | 'branch' | 'dir' | 'emp' }
@@ -22,7 +22,7 @@ function normText(p: Payload, m: MetricDef): string {
   return `цель ${fmt(m.id, n.target)}`
 }
 
-export function Heatmap({ payload, sel, rows, peerKeys, caption, metrics = METRICS, onCell, active }: Props) {
+export function Heatmap({ payload, sel, rows, peerKeys, caption, metrics = MAIN_METRICS, onCell, active }: Props) {
   const shown = metrics.filter((m) => payload.values[m.id])
   return (
     <div className="heat-wrap">
