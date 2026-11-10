@@ -24,6 +24,12 @@ describe('Group screen', () => {
     for (const w of ['42', '43', '44', '45']) expect(within(trend).getByText(`${w} нед.`)).toBeTruthy()
   })
 
+  it('shows NS1 attempts per employee', () => {
+    render(<Group payload={fixture()} sel={sel} onSel={() => {}} group="СР2" />)
+    expect(screen.getByTestId('head-ns1_attempts')).toBeTruthy()
+    expect(screen.getByTestId('cell-e:СР2:Петров Иван-ns1_attempts').textContent).toContain('5,6')
+  })
+
   it('links to every group', () => {
     render(<Group payload={fixture()} sel={sel} onSel={() => {}} group="СР2" />)
     const nav = screen.getByRole('navigation', { name: 'Группы' })

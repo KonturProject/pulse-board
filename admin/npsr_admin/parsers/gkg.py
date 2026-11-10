@@ -1,6 +1,14 @@
-"""Воронка ГкГ НС, sheet `Звонков на цепочку длит`: attempts per NS chain, year over year.
+"""Воронка ГкГ НС: attempts per NS chain («Звонков на цепочку»), НС1 only, year over year.
 
-Pivot rows: director → `0` (ordinary NS) / `1` (НС1, "НС-наработки", invoices from 6 min) / `Unknown`
+Main path — the pivot cache inside the workbook (see pivot_cache.py): every source row with its group and
+operator, so the metric goes down to employees whatever the visible pivot shows (the sheet is protected,
+the workbook read-only, and the pivot itself hides СР9). The calculated field «Звонков на цепочку» is
+num_dur / over_fact_traf (read from the cache formula); rows: campaign_ns_type = «1», groups of the
+direction. Current year → `ns1_attempts` by employee; last year → `ns1_attempts_ly` by group, and for the
+whole direction from every НП_СР group of that year (closed groups like СР4 are the YoY baseline).
+
+Fallback for a workbook without a readable cache — the visible sheet `Звонков на цепочку длит`:
+pivot rows: director → `0` (ordinary NS) / `1` (НС1, "НС-наработки", invoices from 6 min) / `Unknown`
 → branch → (groups, when the author saves the pivot expanded). Columns: `Прошлый год` / `Текущий год`
 × week numbers. Values are averages, so they are kept as-is (num = value, den = 1) at the deepest level
 available; only НС1 is taken.
@@ -12,6 +20,7 @@ from pathlib import Path
 from ..excel import find_row, iter_rows, num
 from ..groups import match_group
 from ..model import Fact, ParseResult
+from ..pivot_cache import find_cache
 
 SHEET = "Звонков на цепочку длит"
 SECTION_LABELS = {"0", "1", "Unknown", "Общий итог"}
@@ -23,8 +32,68 @@ def _label(v) -> str:
     return str(v).strip() if v is not None else ""
 
 
+CALC_FIELD = "Звонков на цеп"
+
+
+def _from_cache(path: Path, res: ParseResult) -> bool:
+    """Facts from the pivot cache; False when the workbook has no such cache."""
+    if Path(path).suffix.lower() != ".xlsb":
+        return False
+    try:
+        found = find_cache(path, CALC_FIELD)
+    except (ValueError, KeyError, IndexError, OSError) as e:
+        res.warnings.append(f"ГкГ: кэш сводной не прочитан ({e}) — беру видимую сводную")
+        return False
+    if not found:
+        return False
+    fields, calc, rows = found
+    if len(calc.refs) != 2:
+        res.warnings.append("ГкГ: формула «Звонков на цепочку» изменилась — беру видимую сводную")
+        return False
+    num_f, den_f = fields[calc.refs[0]].name, fields[calc.refs[1]].name
+    cur: dict[tuple[str, str, str], list[float]] = {}
+    ly: dict[tuple[str, str], list[float]] = {}
+    ly_dir: dict[int, list[float]] = {}
+    years: set[int] = set()
+    for r in rows:
+        if str(r.get("campaign_ns_type")) != "1":
+            continue
+        group = match_group(r.get("group_name"))
+        week = r.get("week_num_not_year")
+        if not week:
+            continue
+        n, d = num(r.get(num_f)), num(r.get(den_f))
+        last_year = r.get("y2y_period") != "Текущий год"
+        if last_year and "НП_СР" in str(r.get("group_name")):
+            acc = ly_dir.setdefault(int(week), [0.0, 0.0])
+            acc[0] += n
+            acc[1] += d
+        if not group:
+            continue
+        if not last_year:
+            years.add(int(num(r.get("Year_num"))))
+            acc = cur.setdefault((int(week), group, str(r.get("operator") or "").strip()), [0.0, 0.0])
+        else:
+            acc = ly.setdefault((int(week), group), [0.0, 0.0])
+        acc[0] += n
+        acc[1] += d
+    year = max(years) if years else date.fromtimestamp(Path(path).stat().st_mtime).isocalendar()[0]
+    for (wk, g, op), (n, d) in cur.items():
+        if d and op:
+            res.facts.append(Fact("ns1_attempts", f"{year}.{wk:02d}", g, op, n, d))
+    for (wk, g), (n, d) in ly.items():
+        if d:
+            res.facts.append(Fact("ns1_attempts_ly", f"{year}.{wk:02d}", g, None, n, d))
+    for wk, (n, d) in ly_dir.items():
+        if d:
+            res.facts.append(Fact("ns1_attempts_ly", f"{year}.{wk:02d}", "*", None, n, d))
+    return True
+
+
 def parse(path: Path) -> ParseResult:
     res = ParseResult(source="gkg", data_date=None)
+    if _from_cache(path, res):
+        return res
     cur_year = date.fromtimestamp(Path(path).stat().st_mtime).isocalendar()[0]
     try:
         rows = iter_rows(path, SHEET)

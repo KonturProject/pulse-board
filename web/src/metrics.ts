@@ -16,7 +16,7 @@ export const METRICS: MetricDef[] = [
   { id: 'quality_invoices', label: 'Качественные счета на человека', short: 'Кач. счета', unit: 'num', granularity: 'day' },
   { id: 'long_presentations', label: 'Длинные презентации на человека', short: 'Длинные през.', unit: 'num', granularity: 'day' },
   { id: 'taken', label: 'Взятые, % плана', short: 'Взятые', unit: 'pct', granularity: 'day' },
-  { id: 'ns1_attempts', label: 'Попытки в НС1', short: 'Попытки НС1', unit: 'num', granularity: 'week', groupOnly: true },
+  { id: 'ns1_attempts', label: 'Попытки в НС1', short: 'Попытки НС1', unit: 'num', granularity: 'week' },
   { id: 'attempts_300', label: 'Попытки в 300+', short: 'Попытки 300+', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'oz_attempts', label: 'Попытки в ОЗ', short: 'Попытки ОЗ', unit: 'num', granularity: 'day' },
   { id: 'oz_speed_30', label: 'ОЗ взяты за 30 минут', short: 'ОЗ ≤ 30 мин', unit: 'pct', granularity: 'day' },

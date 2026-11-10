@@ -18,6 +18,7 @@ export function fixture(): Payload {
   const values: Payload['values'] = {
     quality_invoices: {}, runrate_money: {}, runrate_pcs: {}, attempts_300: { '2026.45': a300, '2026.44': a300 },
     oz_speed_30: {},
+    ns1_attempts: { '2026.45': groupValues([3.8, 4.6, 4.4, 5.4, 3.9, 3.0], { dir: 4.4, 'e:СР2:Иванова Анна': 3.2, 'e:СР2:Петров Иван': 5.6 }) },
   }
   for (const d of DAYS) {
     values.quality_invoices[d] = q
