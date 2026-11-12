@@ -1,5 +1,7 @@
 # Пульс направления — план реализации
 
+> **Исторический документ** — план первого запуска (09.11.2026), выполнен. Актуальное устройство проекта — [docs/PROJECT.md](../../PROJECT.md); изменения после запуска — раздел 0 [дизайна](../specs/2026-11-09-np-sr-dashboard-design.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** локальная админка собирает 8 Excel-отчётов из сетевых папок, считает фокусные показатели 6 групп НП СР, копит историю и публикует зашифрованные данные на GitHub Pages, где статический дашборд показывает тепловую карту групп, карточки групп и провал до сотрудников.
