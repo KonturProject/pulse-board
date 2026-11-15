@@ -5,8 +5,8 @@ import { Spark } from '../src/ui/Spark'
 
 describe('monthBreaks', () => {
   it('marks the week whose Friday falls into a new month', () => {
-    expect(monthBreaks(['2026.42', '2026.43', '2026.44', '2026.45'])).toEqual([3])
-    expect(monthBreaks(['2026.41', '2026.42'])).toEqual([])
+    expect(monthBreaks(['2026.42', '2026.43', '2026.44', '2026.45'], {})).toEqual([3])
+    expect(monthBreaks(['2026.41', '2026.42'], {})).toEqual([])
   })
 })
 

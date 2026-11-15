@@ -42,3 +42,16 @@ describe('Dynamics screen', () => {
     expect(screen.getByRole('link', { name: 'Динамика' }).getAttribute('href')).toBe('#/dynamics')
   })
 })
+
+describe('Dynamics with hidden people', () => {
+  afterEach(() => {
+    cleanup()
+    localStorage.clear()
+  })
+
+  it('recomputes the group without people hidden on the group screen', () => {
+    localStorage.setItem('npsr-hidden:СР2', JSON.stringify(['e:СР2:Иванова Анна']))
+    render(<Dynamics payload={fixture()} sel={sel} onSel={() => {}} group={null} />)
+    expect(screen.getByTestId('dyn-g:СР2-quality_invoices').textContent).toContain('сейчас 4,5')
+  })
+})

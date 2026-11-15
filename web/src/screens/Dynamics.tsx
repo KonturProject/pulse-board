@@ -30,13 +30,17 @@ function SummaryCell({ s }: { s: Summary }) {
       {s.place != null && (
         <span className="dyn-place">
           {s.place} место{' '}
-          {s.dPlace != null && (
+          {s.hasPrev && s.dPlace != null && (
             <span className={`tag ${tone(s.dPlace, true)}`}>{s.dPlace > 0 ? `▲${s.dPlace}` : s.dPlace < 0 ? `▼${-s.dPlace}` : '='}</span>
           )}
         </span>
       )}
-      <span className={`tag ${tone(s.dGood, true)}`}>сильных {signed(s.dGood)}</span>
-      <span className={`tag ${tone(s.dBad, false)}`}>провалов {signed(s.dBad)}</span>
+      {s.hasPrev ? (
+        <>
+          <span className={`tag ${tone(s.dGood, true)}`}>сильных {signed(s.dGood)}</span>
+          <span className={`tag ${tone(s.dBad, false)}`}>провалов {signed(s.dBad)}</span>
+        </>
+      ) : <span className="tag t-flat">нет прошлой недели для сравнения</span>}
     </td>
   )
 }
@@ -47,7 +51,7 @@ export function Dynamics({ payload, sel, onSel, group }: Props) {
     [payload],
   )
   const metrics: MetricDef[] = MAIN_METRICS.filter((m) => shown.values[m.id] && (!group || !m.groupOnly))
-  const breaks = monthBreaks(shown.weeks)
+  const breaks = monthBreaks(shown.weeks, shown.days)
   const last = shown.weeks[shown.weeks.length - 1]
   const prev = shown.weeks[shown.weeks.length - 2]
   const day = lastDay(shown)

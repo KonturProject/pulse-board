@@ -63,3 +63,48 @@ describe('groupSummary', () => {
     expect(groupSummary(dynPayload(), 'СР1')).toMatchObject({ place: 1, dPlace: 2 })
   })
 })
+
+// --- final review fixes ---
+import { monthBreaks as mb } from '../src/dynamics'
+
+describe('review fixes', () => {
+  it('uses the metric own last day when another report is a day ahead', () => {
+    const p = dynPayload(['2026-11-02', '2026-11-03', '2026-11-05', '2026-11-06']) // union has Fri
+    p.values.quality_invoices['2026.45~2026-11-05'] = { 'g:СР1': 4.0 } // this metric only through Thu
+    expect(change(p, 'quality_invoices', 'g:СР1').prev).toBe(3.2) // Thu vs Thu, not vs Fri
+  })
+
+  it('falls back to the latest earlier day when last week had a holiday on that weekday', () => {
+    const p = dynPayload()
+    p.values.quality_invoices['2026.45~2026-11-05'] = { 'g:СР1': 4.0 }
+    delete p.values.quality_invoices['2026.44~2026-10-29']
+    p.values.quality_invoices['2026.44~2026-10-28'] = { 'g:СР1': 3.1 }
+    expect(change(p, 'quality_invoices', 'g:СР1').prev).toBe(3.1)
+  })
+
+  it('shows no change, not a fall, when both weeks are zero', () => {
+    const p = dynPayload()
+    p.values.quality_invoices['2026.45']['g:СР6'] = 0
+    p.values.quality_invoices['2026.45~2026-11-05'] = { ...p.values.quality_invoices['2026.45~2026-11-05'], 'g:СР6': 0 }
+    p.values.quality_invoices['2026.44~2026-10-29']['g:СР6'] = 0
+    expect(change(p, 'quality_invoices', 'g:СР6').trend).toBe('flat')
+  })
+
+  it('treats a change that rounds to zero on screen as flat', () => {
+    const p = dynPayload()
+    p.values.oz_speed_30 = { '2026.44': { 'g:СР1': 0.10 }, '2026.45': { 'g:СР1': 0.104 },
+      '2026.44~2026-10-29': { 'g:СР1': 0.10 }, '2026.45~2026-11-05': { 'g:СР1': 0.104 } }
+    expect(change(p, 'oz_speed_30', 'g:СР1').trend).toBe('flat')
+  })
+
+  it('gives no week-over-week change in the summary when the group had no data last week', () => {
+    const p = dynPayload()
+    p.values.ns1_attempts['2026.45']['g:СР6'] = 9
+    p.values.quality_invoices['2026.45']['g:СР6'] = 5
+    expect(groupSummary(p, 'СР6')).toMatchObject({ hasPrev: false, dPlace: undefined, dGood: 0, dBad: 0 })
+  })
+
+  it('puts the month marker where the data month changes, not by the calendar Friday', () => {
+    expect(mb(['2026.13', '2026.14', '2026.15'], { '2026.13': ['2026-03-27'], '2026.14': ['2026-03-31'], '2026.15': ['2026-04-06'] })).toEqual([2])
+  })
+})
