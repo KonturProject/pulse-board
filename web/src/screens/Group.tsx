@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { noPlan, withoutEmployees } from '../adjust'
 import type { Payload } from '../data'
+import { loadHidden, saveHidden } from '../hidden'
 import { MAIN_METRICS } from '../metrics'
 import { GroupCard } from '../ui/GroupCard'
 import { Header } from '../ui/Header'
@@ -9,24 +10,6 @@ import { Trend } from '../ui/Trend'
 import { employeesOf, GROUP_KEYS, type Sel } from '../view'
 
 type Props = { payload: Payload; sel: Sel; onSel: (s: Sel) => void; group: string }
-
-const storageKey = (group: string) => `npsr-hidden:${group}`
-
-function loadHidden(group: string): Set<string> {
-  try {
-    return new Set(JSON.parse(localStorage.getItem(storageKey(group)) ?? '[]') as string[])
-  } catch {
-    return new Set()
-  }
-}
-
-function saveHidden(group: string, hidden: Set<string>) {
-  try {
-    localStorage.setItem(storageKey(group), JSON.stringify([...hidden]))
-  } catch {
-    /* private mode: the filter lives only in this tab */
-  }
-}
 
 export function Group({ payload, sel, onSel, group }: Props) {
   const [active, setActive] = useState<{ entity: string; metric: string } | null>(null)

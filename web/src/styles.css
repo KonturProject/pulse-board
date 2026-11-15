@@ -125,6 +125,20 @@ table.heat { border-collapse: separate; border-spacing: 4px; width: 100%; font-v
 .spark-line.up { stroke: var(--green); } .spark-line.down { stroke: var(--red); }
 .spark-dot { fill: var(--muted); } .spark-dot.up { fill: var(--green); } .spark-dot.down { fill: var(--red); }
 .month-break { stroke: var(--muted); stroke-dasharray: 2 3; opacity: .6; }
+.dyn-note { font-size: 13px; margin-top: 4px; max-width: 80ch; }
+.heat.dyn td { height: auto; padding: 6px 4px; }
+.dyn-cell { min-width: 96px; }
+.dyn-cell .dyn-diff { display: block; font-size: 14px; font-weight: 700; margin-top: 2px; }
+.dyn-cell .dyn-now { display: block; font-size: 11px; font-weight: 500; color: var(--muted); }
+.dyn-up { background: var(--green-soft); color: var(--green-ink); }
+.dyn-down { background: var(--red-soft); color: var(--red-ink); }
+.dyn-flat, .dyn-none { color: var(--muted); }
+.dyn-sum { background: #fff !important; border: 1px solid var(--line); text-align: left !important; padding: 6px 10px !important; min-width: 150px; }
+.dyn-sum .tag { display: inline-block; margin: 2px 4px 0 0; }
+.dyn-place { display: block; font-weight: 800; }
+.t-up { background: var(--green-soft); color: var(--green-ink); }
+.t-down { background: var(--red-soft); color: var(--red-ink); }
+.t-flat { background: var(--bg); color: var(--muted); }
 
 /* ---------- rating ---------- */
 .rating .panel-head p { max-width: 70ch; font-size: 13px; margin-top: 4px; }

@@ -4,6 +4,7 @@ import { DecryptError } from './crypto'
 import { loadDashboard, readPhrase, savePhrase, type Payload } from './data'
 import { groupFromHash } from './route'
 import { Group } from './screens/Group'
+import { Dynamics } from './screens/Dynamics'
 import { Main } from './screens/Main'
 import { Rating } from './screens/Rating'
 import type { Sel } from './view'
@@ -59,6 +60,11 @@ export default function App() {
   if (!payload || !sel) {
     if (busy && !error) return <main className="access"><p className="muted">Загружаю данные…</p></main>
     return <AccessScreen error={error} busy={busy} onSubmit={open} />
+  }
+  if (location.hash.startsWith('#/dynamics')) {
+    const g = groupFromHash(location.hash.replace('#/dynamics', '#/g'))
+    if (!g && location.hash.length > '#/dynamics'.length + 1) history.replaceState(null, '', '#/dynamics')
+    return <Dynamics key={g ?? 'all'} payload={payload} sel={sel} onSel={setSel} group={g} />
   }
   if (location.hash.startsWith('#/rating')) return <Rating payload={payload} sel={sel} onSel={setSel} />
   const group = groupFromHash(location.hash)
