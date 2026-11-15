@@ -81,3 +81,9 @@ export function employeeSummary(p: Payload, emp: string, peers: string[], metric
   const was = prev ? count(prev) : null
   return { good: now.good, dGood: was ? now.good - was.good : 0, bad: now.bad, dBad: was ? now.bad - was.bad : 0 }
 }
+
+/** Indices of weeks whose Friday is in a different month than the previous week's Friday (run-rate restarts). */
+export function monthBreaks(weeks: string[]): number[] {
+  const month = (w: string) => weekdaysOf(w)[4].slice(0, 7)
+  return weeks.flatMap((w, i) => (i > 0 && month(w) !== month(weeks[i - 1]) ? [i] : []))
+}
