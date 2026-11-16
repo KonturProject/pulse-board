@@ -44,6 +44,7 @@ export function Main({ payload, sel, onSel }: Props) {
 
         <nav className="views" aria-label="Разделы">
           <a className="view-btn" href="#/rating">Рейтинг руководителей</a>
+          <a className="view-btn" href="#/dynamics">Динамика</a>
           <button type="button" className={`view-btn${lead ? ' on' : ''}`} aria-expanded={lead} onClick={() => setLead(!lead)}>
             Данные для ДПП, координатора и РФ
           </button>
