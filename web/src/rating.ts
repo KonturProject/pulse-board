@@ -5,7 +5,7 @@ import { cellValue, cellZone, GROUP_KEYS, type Sel } from './view'
 /** Run-rate (the end result) and the quality metrics that drive it — no funnel volumes like «взятые». */
 export const RATING_METRICS = [
   'runrate_money', 'quality_invoices', 'long_presentations', 'ns1_attempts', 'attempts_300',
-  'oz_attempts', 'oz_speed_30', 'ak_pay_term_primary', 'ak_pay_term_ns',
+  'oz_attempts', 'oz_speed_30', 'ak_pay_term_primary', 'ak_pay_term_ns', 'ak_content_hook',
 ]
 
 export type RatingRow = {

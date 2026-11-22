@@ -56,4 +56,14 @@ describe('Main screen', () => {
     expect(within(t).getByTestId('head-ak_rg_feedback')).toBeTruthy()
     expect(within(t).queryByTestId('head-ak_robot_coverage')).toBeNull()
   })
+
+  it('shows the content hook audit next to the pay-term columns with its 35% target', () => {
+    const p = fixture()
+    p.values.ak_content_hook = { '2026.45': { 'g:СР1': 0.4, 'g:СР2': 0.2, dir: 0.33 } }
+    p.norms.ak_content_hook = { target: 0.35 }
+    render(<Main payload={p} sel={sel} onSel={() => {}} />)
+    const head = screen.getByTestId('head-ak_content_hook')
+    expect(head.textContent).toContain('цель 35%')
+    expect(screen.getByTestId('cell-g:СР1-ak_content_hook').textContent).toContain('40%')
+  })
 })

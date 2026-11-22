@@ -6,6 +6,7 @@ const METRICS = {
   oz_attempts: ['Попытки в ОЗ', 'num'], oz_speed_30: ['ОЗ за 30 мин', 'pct'],
   ak_rg_feedback: ['АК: ОС руководителя', 'score'],
   ak_pay_term_primary: ['АК: срок оплаты, первичка', 'pct'], ak_pay_term_ns: ['АК: срок оплаты, НС', 'pct'],
+  ak_content_hook: ['АК: контентная зацепка', 'pct'],
   orders_extra_seats: ['Доп. места на чел.', 'num'], orders_schools: ['Школы на чел.', 'num'],
   orders_periodicals: ['Периодика на чел.', 'num'],
 }

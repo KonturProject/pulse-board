@@ -25,6 +25,7 @@ export const METRICS: MetricDef[] = [
   { id: 'ak_rg_feedback', label: 'АК: обратная связь руководителя', short: 'АК: ОС РГ', unit: 'score', granularity: 'week', groupOnly: true, leadership: true },
   { id: 'ak_pay_term_primary', label: 'АК: срок оплаты, первичка', short: 'Срок опл. перв.', unit: 'pct', granularity: 'week' },
   { id: 'ak_pay_term_ns', label: 'АК: срок оплаты, НС', short: 'Срок опл. НС', unit: 'pct', granularity: 'week' },
+  { id: 'ak_content_hook', label: 'АК: контентная зацепка', short: 'Контент. зацепка', unit: 'pct', granularity: 'week' },
   { id: 'orders_extra_seats', label: 'Счета на доп. места на человека', short: 'Доп. места', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'orders_schools', label: 'Счета на школы на человека', short: 'Школы', unit: 'num', granularity: 'week', groupOnly: true },
   { id: 'orders_periodicals', label: 'Счета на периодику на человека', short: 'Периодика', unit: 'num', granularity: 'week', groupOnly: true },
@@ -41,5 +42,5 @@ export const SOURCE_OF: Record<string, string> = {
   runrate_money: 'oper', runrate_pcs: 'oper', quality_invoices: 'funnel', long_presentations: 'funnel',
   taken: 'funnel', completed: 'funnel', ns1_attempts: 'gkg', attempts_300: 'attempts300', oz_attempts: 'oz_attempts',
   oz_speed_30: 'oz_speed', ak_rg_feedback: 'ak', ak_robot_coverage: 'ak', ak_pay_term_primary: 'ak',
-  ak_pay_term_ns: 'ak', orders_extra_seats: 'orders', orders_schools: 'orders', orders_periodicals: 'orders',
+  ak_pay_term_ns: 'ak', ak_content_hook: 'ak', orders_extra_seats: 'orders', orders_schools: 'orders', orders_periodicals: 'orders',
 }

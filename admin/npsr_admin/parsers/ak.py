@@ -4,6 +4,7 @@
   per group (employee=None), average score.
 - ak_robot_coverage: unique managers of the group graded by a robot card in the week; the denominator
   (group staff that week) is filled in by the aggregator (den=0 here).
+- ak_content_hook: criterion `2. КС контентная зацепка` in the primary robot card, share of 100s (same as pay term).
 - ak_pay_term_primary / ak_pay_term_ns: criterion `3. Срок оплаты` (NS card) / `7.1. Сроки оплаты` (primary card), binary 0/100, in the robot
   cards for the primary campaign / NS — share of 100s.
 """
@@ -20,6 +21,7 @@ RG_CARD = "АП_ОС_Практика_РГ 2.0"
 ROBOT_PRIMARY = "АП_МП_Оценка робота"
 ROBOT_NS = "Оценка робота_НС_new"
 PAY_TERM = re.compile(r"Срок\w* оплаты")  # «3. Срок оплаты» (НС) / «7.1. Сроки оплаты» (первичка)
+CONTENT_HOOK = re.compile(r"контентн\w* зацепк", re.I)  # «2. КС контентная зацепка» (robot card, первичка)
 
 
 def _week(v) -> str | None:
@@ -74,8 +76,13 @@ def parse(path: Path) -> ParseResult:
         if mgr:
             covered.add((week, group, mgr))
         crit = row[c_crit] if c_crit < len(row) else None
-        if mgr and any(isinstance(v, str) and PAY_TERM.search(v) for v in (row[c_type], crit)):
+        texts = [v for v in (row[c_type], crit) if isinstance(v, str)]
+        metric = None
+        if mgr and any(PAY_TERM.search(v) for v in texts):
             metric = "ak_pay_term_primary" if card == ROBOT_PRIMARY else "ak_pay_term_ns"
+        elif mgr and card == ROBOT_PRIMARY and any(CONTENT_HOOK.search(v) for v in texts):
+            metric = "ak_content_hook"
+        if metric:
             acc = pay.setdefault((metric, week, group, mgr), [0.0, 0.0])
             acc[0] += cnt if score >= 100 else 0.0
             acc[1] += cnt

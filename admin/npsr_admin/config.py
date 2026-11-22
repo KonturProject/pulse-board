@@ -42,6 +42,7 @@ DEFAULT_NORMS = {
     "attempts_300": {"target": 3.8},
     "oz_attempts": {"target": 6.5},
     "oz_speed_30": {"target": 0.95},
+    "ak_content_hook": {"target": 0.35},
 }
 
 

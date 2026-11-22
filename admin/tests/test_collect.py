@@ -15,6 +15,7 @@ def test_config_round_trip_and_defaults(npsr_home):
     assert cfg.reports["oper"].pattern == "Опер_отчет_*.xlsb"
     assert cfg.norms["quality_invoices"] == {"target": 4}
     assert cfg.norms["oz_speed_30"] == {"target": 0.95}
+    assert cfg.norms["ak_content_hook"] == {"target": 0.35}
     assert cfg.duck_threshold == 0.15
     cfg.reports["oper"].folder = r"\\server\reports\oper"
     save_config(cfg)
@@ -91,3 +92,12 @@ def test_zero_facts_is_a_warning_and_weekly_date_is_file_date(tmp_path, monkeypa
     items = {i.source: i for i in collect(cfg, Store(tmp_path / "h.sqlite"), progress=lambda m: None)}
     assert any("0 записей" in w for w in items["gkg"].warnings)
     assert items["ak"].data_date == date(2026, 11, 6)
+
+
+def test_saved_config_gets_new_default_norms(npsr_home):
+    import json
+    npsr_home.mkdir(parents=True, exist_ok=True)
+    (npsr_home / "config.json").write_text(json.dumps({"norms": {"quality_invoices": {"target": 5}}}), encoding="utf-8")
+    cfg = load_config()
+    assert cfg.norms["quality_invoices"] == {"target": 5}  # the user's value is kept
+    assert cfg.norms["ak_content_hook"] == {"target": 0.35}  # a norm added later appears by default

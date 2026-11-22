@@ -38,6 +38,9 @@ def ak_file(tmp_path):
         _row(100, G1, "Иванова", "АП_МП_Оценка робота", "1. Установление контакта"),
         _row(100, G2, "Сидорова", "АП_НП_первичка", "3. Срок оплаты"),
         _row(100, "КЦПК_НП_СР_Тверь_Ученики", "Ученик", "АП_МП_Оценка робота", "3. Срок оплаты"),
+        _row(100, G1, "Иванова", "АП_МП_Оценка робота", "2. КС контентная зацепка"),
+        _row(0, G1, "Иванова", "АП_МП_Оценка робота", "2. КС контентная зацепка"),
+        _row(0, G1, "Петрова", "АП_МП_Оценка робота", "2. КС контентная зацепка"),
     ]:
         ws.append(r)
     path = tmp_path / "ak.xlsx"
@@ -70,10 +73,18 @@ def test_pay_term_share_of_100(ak_file):
     assert {f.group for f in res.facts} == {"СР1"}
 
 
+def test_content_hook_share_of_100(ak_file):
+    fs = _facts(ak.parse(ak_file), "ak_content_hook")
+    assert sum(f.num for f in fs) / sum(f.den for f in fs) == pytest.approx(1 / 3)
+    assert {f.employee for f in fs} == {"Иванова", "Петрова"}
+
+
 def test_real_file_has_every_metric_in_time(sample):
     path = sample("АП_НП_СР_АК.xlsb")
     t = time.monotonic()
     res = ak.parse(path)
     assert time.monotonic() - t < 120
     metrics = {f.metric for f in res.facts}
-    assert {"ak_rg_feedback", "ak_robot_coverage", "ak_pay_term_primary", "ak_pay_term_ns"} <= metrics
+    assert {"ak_rg_feedback", "ak_robot_coverage", "ak_pay_term_primary", "ak_pay_term_ns", "ak_content_hook"} <= metrics
+    hook = [f for f in res.facts if f.metric == "ak_content_hook" and f.period == "2026.45"]
+    assert (sum(f.num for f in hook), sum(f.den for f in hook)) == (71, 183)  # 2. КС контентная зацепка, robot card

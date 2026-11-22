@@ -25,6 +25,7 @@ describe('rankGroups', () => {
   it('counts run-rate and quality metrics but never the funnel', () => {
     expect(RATING_METRICS).toContain('runrate_money')
     expect(RATING_METRICS).not.toContain('taken')
+    expect(RATING_METRICS).toContain('ak_content_hook')
     const top = rankGroups(payload(), week)[0]
     expect(top.good).toBe(2)
     expect(top.cells.map((c) => c.id)).not.toContain('taken')
