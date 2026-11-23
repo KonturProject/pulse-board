@@ -170,5 +170,5 @@ $('#phrase').addEventListener('click', async () => {
 ;(async () => {
   cfg = await api('GET', '/api/config')
   renderReports(); renderNorms(); renderLink()
-  $('#status').textContent = 'Готово к сбору'
+  $('#status').textContent = `Готово к сбору · версия ${cfg.version}`
 })()

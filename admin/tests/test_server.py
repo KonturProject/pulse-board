@@ -71,3 +71,25 @@ def test_phrase_change_republishes(server, monkeypatch):
     monkeypatch.setattr(srv_mod, "publish", lambda payload, cfg, push=True: calls.append(cfg.phrase))
     status, body = _req(server, "POST", "/api/phrase", {})
     assert status == 200 and calls and body["link"].endswith(calls[0])
+
+
+def _free_port():
+    import socket
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
+def test_new_start_replaces_an_old_admin_on_the_same_port():
+    port = _free_port()
+    old = make_server(port=port)
+    new = make_server(port=port)
+    try:
+        assert new.server_address[1] == port  # the address people use keeps working …
+        status, cfg = _req(new, "GET", "/api/config")
+        assert status == 200 and cfg["version"]  # … and is served by the new code, which says which one
+    finally:
+        new.shutdown()
+        old.server_close()
